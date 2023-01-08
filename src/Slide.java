@@ -20,11 +20,11 @@ public class Slide {
 	protected Vector<SlideItem> items; //The SlideItems are kept in a vector
 
 	public Slide() {
-		items = new Vector<SlideItem>();
+		items = new Vector<>();
 	}
 
 	//Add a SlideItem
-	public void append(SlideItem anItem) {
+	public void appendItem(SlideItem anItem) {
 		items.addElement(anItem);
 	}
 
@@ -40,7 +40,7 @@ public class Slide {
 
 	//Create a TextItem out of a String and add the TextItem
 	public void append(int level, String message) {
-		append(new TextItem(level, message));
+		appendItem(new TextItem(level, message));
 	}
 
 	//Returns the SlideItem
