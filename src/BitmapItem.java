@@ -22,7 +22,7 @@ import java.io.IOException;
 
 public class BitmapItem extends SlideItem {
   private BufferedImage bufferedImage;
-  private final String imageName;
+  private String imageName;
   
   protected static final String FILE = "File ";
   protected static final String NOTFOUND = " not found";
@@ -31,39 +31,57 @@ public class BitmapItem extends SlideItem {
   	//level indicates the item-level; name indicates the name of the file with the image
 	public BitmapItem(int level, String imageName) {
 		super(level);
-		this.imageName = imageName;
-		try {
-			bufferedImage = ImageIO.read(new File(imageName));
-		}
-		catch (IOException e) {
-			System.err.println(FILE + imageName + NOTFOUND) ;
-		}
+		setImageName(imageName);
+		setBufferedImage();
 	}
 
-	//An empty bitmap item
-	public BitmapItem() {
-		this(0, null);
+	public void setImageName(String name) {
+		this.imageName = name;
 	}
 
 	//Returns the filename of the image
-	public String getName() {
-		return imageName;
+	public String getImageName() {
+		return this.imageName;
+	}
+
+	public void setBufferedImage() {
+		try {
+			this.bufferedImage = ImageIO.read(new File(getImageName()));
+		} catch (IOException e) {
+			System.err.println(FILE + imageName + NOTFOUND);
+		}
+	}
+
+	public BufferedImage getBufferedImage() {
+		return this.bufferedImage;
 	}
 
 	//Returns the bounding box of the image
 	public Rectangle getBoundingBox(Graphics g, ImageObserver observer, float scale, Style myStyle) {
-		return new Rectangle((int) (myStyle.indent * scale), 0,
-				(int) (bufferedImage.getWidth(observer) * scale),
-				((int) (myStyle.leading * scale)) + 
-				(int) (bufferedImage.getHeight(observer) * scale));
+		return new Rectangle(
+							(int) (myStyle.indent * scale),
+							0,
+							(int) (getBufferedImage().getWidth(observer) * scale),
+							((int) (myStyle.leading * scale)) +
+							(int) (getBufferedImage().getHeight(observer) * scale));
 	}
 
 	//Draws the image
 	public void draw(int x, int y, float scale, Graphics g, Style myStyle, ImageObserver observer) {
-		int width = x + (int) (myStyle.indent * scale);
-		int height = y + (int) (myStyle.leading * scale);
-		g.drawImage(bufferedImage, width, height,(int) (bufferedImage.getWidth(observer)*scale),
-                (int) (bufferedImage.getHeight(observer)*scale), observer);
+		g.drawImage(getBufferedImage(),
+					calculateImageWidth(x, myStyle, scale),
+					calculateImageHeight(y, myStyle, scale),
+					(int) (getBufferedImage().getWidth(observer)*scale),
+                	(int) (getBufferedImage().getHeight(observer)*scale),
+					observer);
+	}
+
+	public int calculateImageWidth(int xAs, Style widthStyling, float widthScale) {
+		return xAs + (int) (widthStyling.indent * widthScale);
+	}
+
+	public int calculateImageHeight(int yAs, Style heightStyling, float heightScale) {
+		return yAs + (int) (heightStyling.indent * heightScale);
 	}
 
 }
