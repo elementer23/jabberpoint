@@ -1,7 +1,4 @@
-import java.awt.Rectangle;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.font.TextLayout;
 import java.awt.font.TextAttribute;
 import java.awt.font.LineBreakMeasurer;
@@ -26,18 +23,15 @@ import java.util.ArrayList;
 
 public class TextItem extends SlideItem {
 	private String text;
-	
-	private static final String EMPTYTEXT = "No Text Given";
 
 //A textitem of int level with text string
-	public TextItem(int level, String string) {
+	public TextItem(int level, String text) {
 		super(level);
-		text = string;
+		setText(text);
 	}
 
-//An empty textitem
-	public TextItem() {
-		this(0, EMPTYTEXT);
+	public void setText(String text) {
+		this.text = text;
 	}
 
 //Returns the text
@@ -48,8 +42,28 @@ public class TextItem extends SlideItem {
 //Returns the AttributedString for the Item
 	public AttributedString getAttributedString(Style style, float scale) {
 		AttributedString attrStr = new AttributedString(getText());
-		attrStr.addAttribute(TextAttribute.FONT, style.getFont(scale), 0, text.length());
+		attrStr.addAttribute(TextAttribute.FONT, style.getFont(scale), 0, getText().length());
+
 		return attrStr;
+	}
+
+	private List<TextLayout> getLayouts(Graphics g, Style s, float scale) {
+
+		List<TextLayout> layouts = new ArrayList<>();
+
+		FontRenderContext frc = ((Graphics2D) g).getFontRenderContext();
+
+		LineBreakMeasurer measurer = new LineBreakMeasurer(getAttributedString(s, scale).getIterator(), frc);
+		while (measurer.getPosition() < getText().length()) {
+			TextLayout layout = measurer.nextLayout(setWrappingWidth(s, scale));
+
+			layouts.add(layout);
+		}
+		return layouts;
+	}
+
+	private float setWrappingWidth(Style s, float scale) {
+		return (Slide.WIDTH - s.indent) * scale;
 	}
 
 //Returns the bounding box of an Item
@@ -91,20 +105,6 @@ public class TextItem extends SlideItem {
 			pen.y += layout.getDescent();
 		}
 	  }
-
-	private List<TextLayout> getLayouts(Graphics g, Style s, float scale) {
-		List<TextLayout> layouts = new ArrayList<TextLayout>();
-		AttributedString attrStr = getAttributedString(s, scale);
-    	Graphics2D g2d = (Graphics2D) g;
-    	FontRenderContext frc = g2d.getFontRenderContext();
-    	LineBreakMeasurer measurer = new LineBreakMeasurer(attrStr.getIterator(), frc);
-    	float wrappingWidth = (Slide.WIDTH - s.indent) * scale;
-    	while (measurer.getPosition() < getText().length()) {
-    		TextLayout layout = measurer.nextLayout(wrappingWidth);
-    		layouts.add(layout);
-    	}
-    	return layouts;
-	}
 
 	public String toString() {
 		return "TextItem[" + getLevel()+","+getText()+"]";
