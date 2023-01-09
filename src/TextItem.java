@@ -54,11 +54,11 @@ public class TextItem extends SlideItem {
 		FontRenderContext frc = ((Graphics2D) g).getFontRenderContext();
 
 		LineBreakMeasurer measurer = new LineBreakMeasurer(getAttributedString(s, scale).getIterator(), frc);
-		while (measurer.getPosition() < getText().length()) {
-			TextLayout layout = measurer.nextLayout(setWrappingWidth(s, scale));
 
-			layouts.add(layout);
-		}
+		TextLayout layout = measurer.nextLayout(setWrappingWidth(s, scale));
+
+		layouts.add(layout);
+
 		return layouts;
 	}
 
@@ -69,27 +69,33 @@ public class TextItem extends SlideItem {
 //Returns the bounding box of an Item
 	public Rectangle getBoundingBox(Graphics g, ImageObserver observer, 
 			float scale, Style myStyle) {
+
 		List<TextLayout> layouts = getLayouts(g, myStyle, scale);
-		int xsize = 0, ysize = (int) (myStyle.leading * scale);
-		Iterator<TextLayout> iterator = layouts.iterator();
-		while (iterator.hasNext()) {
-			TextLayout layout = iterator.next();
+
+		int width = 0;
+		int height = (int) (myStyle.leading * scale);
+		int xCoordinate = (int) (myStyle.leading * scale);
+
+		for (TextLayout layout : layouts) {
 			Rectangle2D bounds = layout.getBounds();
-			if (bounds.getWidth() > xsize) {
-				xsize = (int) bounds.getWidth();
+
+			if (bounds.getWidth() > width) {
+				width = (int) bounds.getWidth();
 			}
+
 			if (bounds.getHeight() > 0) {
-				ysize += bounds.getHeight();
+				height += bounds.getHeight();
 			}
-			ysize += layout.getLeading() + layout.getDescent();
+
+			height += layout.getLeading() + layout.getDescent();
 		}
-		return new Rectangle((int) (myStyle.indent*scale), 0, xsize, ysize );
+		return new Rectangle(xCoordinate, 0, width, height );
 	}
 
 //Draws the item
 	public void draw(int x, int y, float scale, Graphics g, 
 			Style myStyle, ImageObserver o) {
-		if (text == null || text.length() == 0) {
+		if (getText() == null || getText().length() == 0) {
 			return;
 		}
 		List<TextLayout> layouts = getLayouts(g, myStyle, scale);
