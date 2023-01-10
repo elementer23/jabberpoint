@@ -97,7 +97,6 @@ public class TextItem extends SlideItem {
 		return new Rectangle(styleScaleHeight(myStyle, scale), 0, width, height );
 	}
 
-
 //Draws the item
 	public void draw(int x, int y, float scale, Graphics g, 
 			Style myStyle, ImageObserver o) {
@@ -108,13 +107,14 @@ public class TextItem extends SlideItem {
 
 		List<TextLayout> layouts = getLayouts(g, myStyle, scale);
 
-		Point pen = new Point(x + (int)(myStyle.indent * scale), 
+		Point pen = new Point(x + (int)(myStyle.indent * scale),
 				y + (int) (myStyle.leading * scale));
-		Graphics2D g2d = (Graphics2D)g;
-		g2d.setColor(myStyle.color);
+
+		g.setColor(myStyle.color);
+		
 		for (TextLayout layout : layouts) {
 			pen.y += layout.getAscent();
-			layout.draw(g2d, pen.x, pen.y);
+			layout.draw((Graphics2D) g, pen.x, pen.y);
 			pen.y += layout.getDescent();
 		}
 	  }
