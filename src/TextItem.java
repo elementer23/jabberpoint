@@ -31,12 +31,14 @@ public class TextItem extends SlideItem {
 	}
 
 	public void setText(String text) {
-		this.text = text;
+		if (!text.isEmpty()) {
+			this.text = text;
+		}
 	}
 
 //Returns the text
 	public String getText() {
-		return text == null ? "" : text;
+		return this.text;
 	}
 
 //Returns the AttributedString for the Item
@@ -66,6 +68,10 @@ public class TextItem extends SlideItem {
 		return (Slide.WIDTH - s.indent) * scale;
 	}
 
+	private int styleScaleHeight(Style myStyle, float scale) {
+		return (int) (myStyle.leading * scale);
+	}
+
 //Returns the bounding box of an Item
 	public Rectangle getBoundingBox(Graphics g, ImageObserver observer, 
 			float scale, Style myStyle) {
@@ -73,8 +79,7 @@ public class TextItem extends SlideItem {
 		List<TextLayout> layouts = getLayouts(g, myStyle, scale);
 
 		int width = 0;
-		int height = (int) (myStyle.leading * scale);
-		int xCoordinate = (int) (myStyle.leading * scale);
+		int height = styleScaleHeight(myStyle, scale);
 
 		for (TextLayout layout : layouts) {
 			Rectangle2D bounds = layout.getBounds();
@@ -89,23 +94,25 @@ public class TextItem extends SlideItem {
 
 			height += layout.getLeading() + layout.getDescent();
 		}
-		return new Rectangle(xCoordinate, 0, width, height );
+		return new Rectangle(styleScaleHeight(myStyle, scale), 0, width, height );
 	}
+
 
 //Draws the item
 	public void draw(int x, int y, float scale, Graphics g, 
 			Style myStyle, ImageObserver o) {
-		if (getText() == null || getText().length() == 0) {
+
+		if (getText().isEmpty()) {
 			return;
 		}
+
 		List<TextLayout> layouts = getLayouts(g, myStyle, scale);
+
 		Point pen = new Point(x + (int)(myStyle.indent * scale), 
 				y + (int) (myStyle.leading * scale));
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.setColor(myStyle.color);
-		Iterator<TextLayout> it = layouts.iterator();
-		while (it.hasNext()) {
-			TextLayout layout = it.next();
+		for (TextLayout layout : layouts) {
 			pen.y += layout.getAscent();
 			layout.draw(g2d, pen.x, pen.y);
 			pen.y += layout.getDescent();
