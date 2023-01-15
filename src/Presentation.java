@@ -17,15 +17,10 @@ public class Presentation {
 	private String showTitle; //The title of the presentation
 	private ArrayList<Slide> showList = null; //An ArrayList with slides
 	private int currentSlideNumber = 0; //The number of the current slide
-	private SlideViewerComponent slideViewComponent = null; //The view component of the slides
+	private SlideViewerComponent slideViewComponent; //The view component of the slides
 
 	public Presentation() {
 		slideViewComponent = null;
-		clear();
-	}
-
-	public Presentation(SlideViewerComponent slideViewerComponent) {
-		this.slideViewComponent = slideViewerComponent;
 		clear();
 	}
 
@@ -52,23 +47,25 @@ public class Presentation {
 
 	//Change the current slide number and report it the the window
 	public void setSlideNumber(int number) {
-		currentSlideNumber = number;
 		if (slideViewComponent != null) {
+			if (number < getSize()) {
+				currentSlideNumber = number;
+			}
 			slideViewComponent.update(this, getCurrentSlide());
 		}
 	}
 
 	//Navigate to the previous slide unless we are at the first slide
 	public void prevSlide() {
-		if (currentSlideNumber > 0) {
-			setSlideNumber(currentSlideNumber - 1);
+		if (getSlideNumber() > 0) {
+			setSlideNumber(getSlideNumber() - 1);
 	    }
 	}
 
 	//Navigate to the next slide unless we are at the last slide
 	public void nextSlide() {
-		if (currentSlideNumber < (showList.size()-1)) {
-			setSlideNumber(currentSlideNumber + 1);
+		if (getSlideNumber() < (getSize()-1)) {
+			setSlideNumber(getSlideNumber() + 1);
 		}
 	}
 
@@ -93,7 +90,7 @@ public class Presentation {
 
 	//Return the current slide
 	public Slide getCurrentSlide() {
-		return getSlide(currentSlideNumber);
+		return getSlide(getSlideNumber());
 	}
 
 	public void exit(int n) {

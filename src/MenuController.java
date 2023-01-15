@@ -123,9 +123,17 @@ public class MenuController extends MenuBar {
 	}
 
 	public void goToPageNumber() {
+
 		String pageNumberStr = JOptionPane.showInputDialog(MenuCode.PAGENR);
-		int pageNumber = Integer.parseInt(pageNumberStr);
-		getPresentation().setSlideNumber(pageNumber - 1);
+
+		if (pageNumberStr == null) {
+			return;
+		}
+
+		if (!pageNumberStr.isEmpty()) {
+			int pageNumber = Integer.parseInt(pageNumberStr);
+			getPresentation().setSlideNumber(pageNumber - 1);
+		}
 	}
 
 	public void createHelpMenu() {
