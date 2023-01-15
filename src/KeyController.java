@@ -27,24 +27,13 @@ public class KeyController extends KeyAdapter {
 	}
 
 	public void keyPressed(KeyEvent keyEvent) {
-		switch(keyEvent.getKeyCode()) {
-			case KeyEvent.VK_PAGE_DOWN:
-			case KeyEvent.VK_DOWN:
-			case KeyEvent.VK_ENTER:
-			case '+':
-				getPresentation().nextSlide();
-				break;
-			case KeyEvent.VK_PAGE_UP:
-			case KeyEvent.VK_UP:
-			case '-':
-				getPresentation().prevSlide();
-				break;
-			case 'q':
-			case 'Q':
-				System.exit(0);
-				break; //Should not be reached
-			default:
-				break;
+		switch (keyEvent.getKeyCode()) {
+			case KeyEvent.VK_PAGE_DOWN, KeyEvent.VK_DOWN, KeyEvent.VK_ENTER, '+' -> getPresentation().nextSlide();
+			case KeyEvent.VK_PAGE_UP, KeyEvent.VK_UP, '-' -> getPresentation().prevSlide();
+			case 'q', 'Q' -> System.exit(0);
+			//Should not be reached
+			default -> {
+			}
 		}
 	}
 }
